@@ -1,0 +1,15 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: murdermystery
+  datasource:
+    url: jdbc:postgresql://localhost:5432/murdermystery
+    username: 'mericode'
+    password: 'password'
+  jpa:
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+    hibernate:
+      ddl-auto: create
+    show-sql: 'true'
