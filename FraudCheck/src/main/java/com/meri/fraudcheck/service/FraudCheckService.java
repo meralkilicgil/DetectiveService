@@ -1,9 +1,8 @@
 package com.meri.fraudcheck.service;
 
-import com.meri.fraudcheck.FraudHistoryRepository;
+import com.meri.fraudcheck.repository.FraudHistoryRepository;
 import com.meri.fraudcheck.dto.FraudCheckDto;
 import com.meri.fraudcheck.entity.FraudCheck;
-import com.meri.fraudcheck.message.MessageSender;
 import com.meri.fraudcheck.message.MessageService;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
