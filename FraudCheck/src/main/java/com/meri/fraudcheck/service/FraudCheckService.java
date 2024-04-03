@@ -1,6 +1,7 @@
 package com.meri.fraudcheck.service;
 
 import com.meri.fraudcheck.FraudHistoryRepository;
+import com.meri.fraudcheck.dto.FraudCheckDto;
 import com.meri.fraudcheck.entity.FraudCheck;
 import com.meri.fraudcheck.message.MessageSender;
 import com.meri.fraudcheck.message.MessageService;
@@ -17,14 +18,21 @@ public class FraudCheckService {
     private final MessageService messageService;
 
     public boolean isFraudulentPerson(Long personId) {
-        fraudHistoryRepository.save(
+        LocalDateTime checkDate = LocalDateTime.now();
+        FraudCheck fraudCheck = fraudHistoryRepository.save(
                 FraudCheck.builder()
-                        .personId(Math.toIntExact(personId))
+                        .personId(personId)
                         .isFraudster(false)
-                        .createdAt(LocalDateTime.now())
+                        .createdAt(checkDate)
                         .build()
         );
-        messageService.sendFraudCheckNotification("Fraud check has been processed for the person with id: " + personId);
+        FraudCheckDto fraudCheckDto = FraudCheckDto.builder()
+                                                    .id(fraudCheck.getId())
+                                                    .personId(fraudCheck.getPersonId())
+                                                    .isFraudster(fraudCheck.getIsFraudster())
+                                                    .createdAt(fraudCheck.getCreatedAt())
+                                                    .build();
+        messageService.sendFraudCheckNotification("Fraud check has been processed for the person with id: " + personId + " and result is: " + fraudCheckDto);
         return false;
     }
 }

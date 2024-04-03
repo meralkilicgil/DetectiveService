@@ -22,7 +22,7 @@ public class FraudCheck {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Integer id;
 
-    private Integer personId;
+    private Long personId;
     private Boolean isFraudster;
     private LocalDateTime createdAt;
 }
