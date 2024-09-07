@@ -36,4 +36,7 @@ public class Person {
     @OneToMany(mappedBy = "person", cascade = CascadeType.ALL)
     @JsonBackReference
     private List<Interview> interviews;
+
+    @Column(name = "fraud_check_id")
+    private Long fraudCheckId;
 }

@@ -1,9 +1,7 @@
 package com.meri.fraudcheck.entity;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import com.meri.murdermysterygame.entity.Person;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -21,8 +19,7 @@ public class FraudCheck {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Integer id;
-
-    private Long personId;
     private Boolean isFraudster;
     private LocalDateTime createdAt;
+    private Long personId;
 }

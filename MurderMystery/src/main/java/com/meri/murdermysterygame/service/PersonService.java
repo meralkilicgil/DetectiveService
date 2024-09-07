@@ -1,14 +1,17 @@
 package com.meri.murdermysterygame.service;
 
 import com.meri.murdermysterygame.aop.LogAnnotation;
+import com.meri.murdermysterygame.api.FraudCheckFein;
 import com.meri.murdermysterygame.dao.PersonDao;
 import com.meri.murdermysterygame.dto.DriversLicenseDto;
 import com.meri.murdermysterygame.dto.PersonDto;
 import com.meri.murdermysterygame.entity.Person;
+import com.meri.murdermysterygame.event.PersonCreatedEvent;
 import com.meri.murdermysterygame.exception.ObjectNotFoundException;
 import com.meri.murdermysterygame.utils.DtoUtils;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatusCode;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestTemplate;
@@ -22,7 +25,8 @@ import java.util.Optional;
 public class PersonService {
 
     private final PersonDao personDao;
-    private final RestTemplate restTemplate;
+    private final FraudCheckFein fraudCheckFein;
+    private final KafkaTemplate<String, PersonCreatedEvent> kafkaTemplate;
 
     @LogAnnotation
     public List<PersonDto> getPersonDtoList(){
@@ -49,7 +53,14 @@ public class PersonService {
         }
         Person person = DtoUtils.convertPersonDtoToPersonEntity(personDto);
         person = personDao.create(person);
-        return getPersonById(person.getId());
+        PersonDto createdPerson = getPersonById(person.getId());
+        PersonCreatedEvent personCreatedEvent = PersonCreatedEvent.builder()
+                .name(personDto.getName())
+                .addressNumber(personDto.getAddressNumber())
+                .addressStreetName(personDto.getAddressStreetName())
+                .build();
+        kafkaTemplate.send("person-created", personCreatedEvent);
+        return createdPerson;
     }
 
     @LogAnnotation
@@ -82,8 +93,6 @@ public class PersonService {
 
     @LogAnnotation
     public Boolean checkFraud(Long personId){
-        return restTemplate.getForObject("http://localhost:8081/api/fraud-check/{personId}",
-                Boolean.class,
-                personId);
+        return fraudCheckFein.isFraudster(personId);
     }
 }
